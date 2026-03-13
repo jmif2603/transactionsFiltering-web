@@ -13,6 +13,7 @@ import BenefitIconDuo from './components/BenefitIconDuo';
 import IconReceipt from './components/Icons/IconReceipt';
 import DefaultFilterView, { DEFAULT_BENEFIT_SELECTIONS } from './FilterViewA';
 import type { FilterViewProps, FilterState } from './FilterViewA';
+import { clearedTransactions, pendingTransactions } from './data/transactions';
 
 // ============ Sub-components ============
 
@@ -172,156 +173,6 @@ const Homescreen = ({ FilterView = DefaultFilterView }: HomescreenProps) => {
     setIsDragging(false);
   };
 
-  const clearedTransactions = [
-    {
-      merchantName: '1-800 Contacts',
-      benefitAccount: 'Health Savings',
-      transactionAmount: '293.98',
-      date: 'Dec 09, 2023',
-      type: 'MoneyOut' as const,
-      benefit: 'HSA_FSA' as const,
-    },
-    {
-      merchantName: 'CVS 09447',
-      benefitAccount: 'HRA',
-      transactionAmount: '43.30',
-      date: 'Oct 22, 2023',
-      type: 'MoneyOut' as const,
-      benefit: 'HRA' as const,
-    },
-    {
-      merchantName: 'Employee Payroll Contribution',
-      benefitAccount: 'DCFSA',
-      transactionAmount: '200.00',
-      date: 'Sep 14, 2023',
-      type: 'MoneyIn' as const,
-      benefit: 'Funding' as const,
-    },
-    {
-      merchantName: 'GoodRx',
-      benefitAccount: 'LPFSA',
-      transactionAmount: '50.00',
-      date: 'Aug 03, 2023',
-      type: 'MoneyOut' as const,
-      benefit: 'LPFSA' as const,
-    },
-    {
-      merchantName: 'Amazon.com',
-      benefitAccount: 'Remote Work',
-      transactionAmount: '42.31',
-      date: 'Jun 27, 2023',
-      type: 'MoneyOut' as const,
-      benefit: 'RemoteWork' as const,
-    },
-    {
-      merchantName: 'Metro BusPass 12/2022',
-      benefitAccount: 'Transit',
-      transactionAmount: '82.40',
-      date: 'Apr 11, 2023',
-      type: 'MoneyOut' as const,
-      benefit: 'Transit' as const,
-    },
-    {
-      merchantName: '12/2022 Gym Reward',
-      benefitAccount: 'LSA',
-      transactionAmount: '25.00',
-      date: 'Mar 05, 2023',
-      type: 'MoneyIn' as const,
-      benefit: 'LSA' as const,
-    },
-    {
-      merchantName: 'Downtown Pkg 112',
-      benefitAccount: 'Parking',
-      transactionAmount: '24.00',
-      date: 'Feb 18, 2023',
-      type: 'MoneyOut' as const,
-      benefit: 'Parking' as const,
-    },
-    {
-      merchantName: 'Steps Challenge 01/2023',
-      benefitAccount: 'Rewards',
-      transactionAmount: '20.00',
-      date: 'Jan 30, 2023',
-      type: 'MoneyIn' as const,
-      benefit: 'Rewards' as const,
-    },
-  ];
-
-  const pendingTransactions = [
-    {
-      merchantName: 'HSAStore.com',
-      benefitAccount: 'Health Savings',
-      transactionAmount: '123.45',
-      date: 'Mar 18, 2024',
-      type: 'Pending' as const,
-      benefit: 'HSA_FSA' as const,
-    },
-    {
-      merchantName: 'Dermatology Associates',
-      benefitAccount: 'HRA',
-      transactionAmount: '422.55',
-      date: 'Mar 02, 2024',
-      type: 'Pending' as const,
-      benefit: 'HRA' as const,
-    },
-    {
-      merchantName: 'Employee Payroll Contribution',
-      benefitAccount: 'DCFSA',
-      transactionAmount: '200.00',
-      date: 'Feb 24, 2024',
-      type: 'Pending' as const,
-      benefit: 'DCFSA' as const,
-    },
-    {
-      merchantName: 'Refund',
-      benefitAccount: 'LPFSA',
-      transactionAmount: '50.00',
-      date: 'Feb 07, 2024',
-      type: 'Pending' as const,
-      benefit: 'LPFSA' as const,
-    },
-    {
-      merchantName: 'OfficeSupplies.com',
-      benefitAccount: 'Remote Work',
-      transactionAmount: '150.00',
-      date: 'Jan 29, 2024',
-      type: 'Pending' as const,
-      benefit: 'RemoteWork' as const,
-    },
-    {
-      merchantName: 'Metro BusPass 01/2024',
-      benefitAccount: 'Transit',
-      transactionAmount: '81.70',
-      date: 'Jan 11, 2024',
-      type: 'Pending' as const,
-      benefit: 'Transit' as const,
-    },
-    {
-      merchantName: 'exerciseequipment.com',
-      benefitAccount: 'LSA',
-      transactionAmount: '75.24',
-      date: 'Jan 03, 2024',
-      type: 'Pending' as const,
-      benefit: 'Funding' as const,
-    },
-    {
-      merchantName: 'Deposit',
-      benefitAccount: 'Parking',
-      transactionAmount: '250.00',
-      date: 'Dec 28, 2023',
-      type: 'Pending' as const,
-      benefit: 'Parking' as const,
-    },
-    {
-      merchantName: 'Steps Challenge 12/2023',
-      benefitAccount: 'Rewards',
-      transactionAmount: '20.00',
-      date: 'Dec 19, 2023',
-      type: 'Pending' as const,
-      benefit: 'Rewards' as const,
-    },
-  ];
-
   // Filtering
   const benefitKeyToType: Record<string, string> = {
     healthSavings: 'HSA_FSA', hra: 'HRA', dcfsa: 'DCFSA', lpfsa: 'LPFSA',
@@ -334,11 +185,11 @@ const Homescreen = ({ FilterView = DefaultFilterView }: HomescreenProps) => {
   const anyTypeFilter = appliedFilters ? (appliedFilters.moneyInSelected || appliedFilters.moneyOutSelected) : false;
   const anyStatusFilter = appliedFilters ? (appliedFilters.clearedSelected || appliedFilters.pendingSelected) : false;
 
-  const filterTx = (tx: { benefit?: string; type?: string }) => {
+  const filterTx = (tx: { benefit?: string; type?: string; direction?: string }) => {
     if (anyBenefitFilter && !selectedBenefitTypes.includes(tx.benefit ?? '')) return false;
-    if (anyTypeFilter && tx.type !== 'Pending') {
-      if (appliedFilters?.moneyInSelected && tx.type === 'MoneyIn') return true;
-      if (appliedFilters?.moneyOutSelected && tx.type === 'MoneyOut') return true;
+    if (anyTypeFilter) {
+      if (appliedFilters?.moneyInSelected && tx.direction === 'MoneyIn') return true;
+      if (appliedFilters?.moneyOutSelected && tx.direction === 'MoneyOut') return true;
       return false;
     }
     return true;

@@ -12,7 +12,7 @@ type BenefitType =
   | 'Rewards'
   | 'Funding';
 
-type TransactionType = 'MoneyIn' | 'MoneyOut' | 'Pending';
+type TransactionType = 'Cleared' | 'Pending' | 'MoneyIn' | 'MoneyOut';
 
 interface WalletTransactionListItemProps {
   merchantName: string;
@@ -20,6 +20,7 @@ interface WalletTransactionListItemProps {
   transactionAmount: string;
   date: string;
   type?: TransactionType;
+  direction?: 'MoneyIn' | 'MoneyOut';
   benefit?: BenefitType;
   hasBottomDivider?: boolean;
 }
@@ -30,6 +31,7 @@ const WalletTransactionListItem = ({
   transactionAmount,
   date,
   type = 'MoneyOut',
+  direction,
   benefit = 'HSA_FSA',
   hasBottomDivider = true,
 }: WalletTransactionListItemProps) => {
@@ -41,22 +43,22 @@ const WalletTransactionListItem = ({
     borderLight: '#f7f3f2',
   };
 
-  // Amount color based on transaction type
+  // Effective direction for display
+  const effectiveDirection = direction ?? (type === 'MoneyIn' || type === 'MoneyOut' ? type : 'MoneyOut');
+
+  // Amount color: pending = muted, MoneyIn = green, MoneyOut = dark
   const getAmountColor = () => {
-    switch (type) {
-      case 'MoneyIn':
-        return colors.successMain;
-      case 'Pending':
-        return colors.textMuted;
-      default:
-        return colors.textDark;
-    }
+    if (type === 'Pending') return colors.textMuted;
+    return effectiveDirection === 'MoneyIn' ? colors.successMain : colors.textDark;
   };
 
-  // Amount prefix based on transaction type
+  // Amount prefix based on effective direction
   const getAmountPrefix = () => {
-    return type === 'MoneyOut' ? '- $' : '$';
+    return effectiveDirection === 'MoneyOut' ? '- $' : '$';
   };
+
+  // Visual type passed to icon
+  const iconType = type === 'Pending' ? ('Pending' as const) : effectiveDirection;
 
   return (
     <div
@@ -87,7 +89,7 @@ const WalletTransactionListItem = ({
             minWidth: 0,
           }}
         >
-          <BenefitTransactionIcon benefit={benefit} type={type} />
+          <BenefitTransactionIcon benefit={benefit} type={iconType} />
 
           <div
             style={{
