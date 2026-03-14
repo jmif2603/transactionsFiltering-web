@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import StatusBarIphone from './components/StatusBarIphone';
 import ButtonBar from './components/ButtonBar';
 import DateRangeCustomRange from './DateRangeCustomRange';
+import BottomSheetBenefits from './BottomSheetBenefits';
 import type { BenefitKey, BenefitSelections } from './BottomSheetBenefits';
 import type { DateRangeOption, CustomDateRange } from './BottomSheetDateRange';
 
@@ -293,6 +294,7 @@ export default function FilterView({
   });
 
   const [showCustomRangeSheet, setShowCustomRangeSheet] = useState(false);
+  const [showBenefitSheet, setShowBenefitSheet] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -378,7 +380,7 @@ export default function FilterView({
             <SectionHeader
               label="Benefit"
               expanded={expanded.benefit}
-              onToggle={() => toggleSection('benefit')}
+              onToggle={() => setShowBenefitSheet(true)}
               onClear={() =>
                 setFilters((prev) => ({ ...prev, benefitSelections: DEFAULT_BENEFIT_SELECTIONS }))
               }
@@ -524,6 +526,22 @@ export default function FilterView({
         primaryLabel="Apply Filter"
         onPrimaryClick={() => onApplyFilter?.(filters)}
       />
+
+      {showBenefitSheet && (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
+          <BottomSheetBenefits
+            selections={filters.benefitSelections}
+            onSelectionChange={(key, checked) =>
+              setFilters((prev) => ({
+                ...prev,
+                benefitSelections: { ...prev.benefitSelections, [key]: checked },
+              }))
+            }
+            onOverlayPress={() => setShowBenefitSheet(false)}
+            onSave={() => setShowBenefitSheet(false)}
+          />
+        </div>
+      )}
 
       <DateRangeCustomRange
         isVisible={showCustomRangeSheet}

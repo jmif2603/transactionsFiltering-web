@@ -1,4 +1,5 @@
 import CheckboxWithLabel from './components/CheckboxWithLabel';
+import ButtonBar from './components/ButtonBar';
 
 export type BenefitKey =
   | 'healthSavings'
@@ -32,6 +33,8 @@ export interface BottomSheetBenefitsProps {
   onClearSelection?: () => void;
   /** Callback when overlay or drag handle is pressed (to close) */
   onOverlayPress?: () => void;
+  /** Callback when Save button is pressed */
+  onSave?: () => void;
 }
 
 const BENEFIT_OPTIONS: { key: BenefitKey; label: string }[] = [
@@ -63,6 +66,7 @@ const BottomSheetBenefits = ({
   onSelectionChange,
   onClearSelection: _onClearSelection,
   onOverlayPress,
+  onSave,
 }: BottomSheetBenefitsProps) => {
   return (
     <div
@@ -94,6 +98,7 @@ const BottomSheetBenefits = ({
       <div
         style={{
           position: 'relative',
+          zIndex: 1,
           display: 'flex',
           flexDirection: 'column',
           gap: 8,
@@ -153,30 +158,11 @@ const BottomSheetBenefits = ({
           ))}
         </div>
 
-        {/* Home Indicator */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: '100%',
-            height: 34,
-            backgroundColor: 'white',
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 8,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: 134,
-              height: 5,
-              backgroundColor: 'black',
-              borderRadius: 100,
-            }}
-          />
-        </div>
+        <ButtonBar
+          buttonCount={1}
+          primaryLabel="Save"
+          onPrimaryClick={onSave}
+        />
       </div>
     </div>
   );
