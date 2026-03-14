@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import RadioButtonWithLabel from './components/RadioButtonWithLabel';
 import Button from './components/Button';
+import ButtonBar from './components/ButtonBar';
 import DateRangeCustomRange from './DateRangeCustomRange';
 
 export type DateRangeOption =
@@ -30,6 +31,8 @@ export interface BottomSheetDateRangeProps {
   onClearSelection?: () => void;
   /** Callback when overlay or drag handle is pressed (to close) */
   onOverlayPress?: () => void;
+  /** Callback when Save button is pressed */
+  onSave?: () => void;
 }
 
 const DATE_RANGE_OPTIONS: { key: DateRangeOption; label: string }[] = [
@@ -47,6 +50,7 @@ const BottomSheetDateRange = ({
   onCustomRangeChange,
   onClearSelection: _onClearSelection,
   onOverlayPress,
+  onSave,
 }: BottomSheetDateRangeProps) => {
   const [showCustomRange, setShowCustomRange] = useState(false);
 
@@ -73,6 +77,7 @@ const BottomSheetDateRange = ({
         initialEndDate={customRange?.endDate}
         onSelectDates={handleCustomRangeSelect}
         onDismiss={handleCustomRangeDismiss}
+        onSave={handleCustomRangeDismiss}
       />
 
       {/* Main Bottom Sheet - hide when custom range is showing */}
@@ -104,8 +109,10 @@ const BottomSheetDateRange = ({
 
           {/* Bottom sheet */}
           <div
+            onClick={(e) => e.stopPropagation()}
             style={{
               position: 'relative',
+              zIndex: 1,
               display: 'flex',
               flexDirection: 'column',
               gap: 8,
@@ -186,30 +193,11 @@ const BottomSheetDateRange = ({
               </div>
             </div>
 
-            {/* Home Indicator */}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                width: '100%',
-                height: 34,
-                backgroundColor: 'white',
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: 8,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  width: 134,
-                  height: 5,
-                  backgroundColor: 'black',
-                  borderRadius: 100,
-                }}
-              />
-            </div>
+            <ButtonBar
+              buttonCount={1}
+              primaryLabel="Save"
+              onPrimaryClick={onSave}
+            />
           </div>
         </div>
       )}

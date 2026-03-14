@@ -559,6 +559,7 @@ export default function FilterView({
           }))
         }
         onDismiss={() => setShowCustomRangeSheet(false)}
+        onSave={() => setShowCustomRangeSheet(false)}
       />
     </div>
   );

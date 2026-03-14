@@ -495,6 +495,7 @@ export default function FilterView({
             }))
           }
           onOverlayPress={() => setShowDateRangeSheet(false)}
+          onSave={() => setShowDateRangeSheet(false)}
         />
         </div>
       )}

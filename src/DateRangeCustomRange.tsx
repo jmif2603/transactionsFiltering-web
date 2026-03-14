@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import DragHandle from './components/DragHandle';
 import IconEditPencil from './components/Icons/IconEditPencil';
 
@@ -13,6 +13,8 @@ interface DateRangeCustomRangeProps {
   onSelectDates?: (startDate: Date | null, endDate: Date | null) => void;
   /** Callback when the sheet is dismissed */
   onDismiss?: () => void;
+  /** Callback when Save button is pressed */
+  onSave?: () => void;
 }
 
 const MONTHS = [
@@ -26,15 +28,23 @@ const DateRangeCustomRange = ({
   initialEndDate = null,
   onSelectDates,
   onDismiss,
+  onSave,
 }: DateRangeCustomRangeProps) => {
   const [startDate, setStartDate] = useState<Date | null>(initialStartDate);
   const [endDate, setEndDate] = useState<Date | null>(initialEndDate);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const currentMonthRef = useRef<HTMLDivElement>(null);
 
   // Drag to scroll state
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0);
   const [scrollTop, setScrollTop] = useState(0);
+
+  useEffect(() => {
+    if (isVisible && currentMonthRef.current) {
+      currentMonthRef.current.scrollIntoView({ block: 'start', behavior: 'instant' });
+    }
+  }, [isVisible]);
 
   if (!isVisible) return null;
 
@@ -71,11 +81,15 @@ const DateRangeCustomRange = ({
     setIsDragging(false);
   };
 
-  // Generate months from Jan 2025 to Dec 2026
+  // Generate months from Jan 2020 to current month
   const generateMonths = () => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
     const months: { year: number; month: number }[] = [];
-    for (let year = 2020; year <= 2026; year++) {
-      for (let month = 0; month < 12; month++) {
+    for (let year = 2020; year <= currentYear; year++) {
+      const lastMonth = year === currentYear ? currentMonth : 11;
+      for (let month = 0; month <= lastMonth; month++) {
         months.push({ year, month });
       }
     }
@@ -136,6 +150,7 @@ const DateRangeCustomRange = ({
   };
 
   const months = generateMonths();
+  const today = new Date();
 
   // Generate calendar grid for a month
   const renderMonth = (year: number, month: number) => {
@@ -170,8 +185,14 @@ const DateRangeCustomRange = ({
       weeks.push(currentWeek);
     }
 
+    const isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
+
     return (
-      <div key={`${year}-${month}`} style={{ marginBottom: 56 }}>
+      <div
+        key={`${year}-${month}`}
+        ref={isCurrentMonth ? currentMonthRef : undefined}
+        style={{ marginBottom: 56 }}
+      >
         {/* Month header */}
         <div style={{ display: 'flex', gap: 4, marginBottom: 15 }}>
           <span style={{
@@ -379,26 +400,57 @@ const DateRangeCustomRange = ({
           {months.map(({ year, month }) => renderMonth(year, month))}
         </div>
 
-        {/* Home Indicator */}
+        {/* Save button bar */}
         <div
           style={{
-            height: 34,
-            width: '100%',
             display: 'flex',
-            alignItems: 'flex-end',
-            justifyContent: 'center',
-            paddingBottom: 8,
+            flexDirection: 'column',
+            alignItems: 'stretch',
+            width: '100%',
             backgroundColor: colors.white,
           }}
         >
+          <div style={{ padding: '16px 16px 6px' }}>
+            <button
+              type="button"
+              onClick={onSave}
+              style={{
+                width: '100%',
+                padding: '12px 24px',
+                backgroundColor: colors.primary,
+                border: `2px solid ${colors.primary}`,
+                borderRadius: 6,
+                color: colors.white,
+                fontFamily: 'Roboto, sans-serif',
+                fontSize: 15,
+                fontWeight: 400,
+                lineHeight: '21px',
+                letterSpacing: '-0.15px',
+                cursor: 'pointer',
+              }}
+            >
+              Save
+            </button>
+          </div>
+          {/* iOS home indicator */}
           <div
             style={{
-              width: 134,
-              height: 5,
-              backgroundColor: 'black',
-              borderRadius: 100,
+              height: 34,
+              display: 'flex',
+              alignItems: 'flex-end',
+              justifyContent: 'center',
+              paddingBottom: 8,
             }}
-          />
+          >
+            <div
+              style={{
+                width: 134,
+                height: 5,
+                backgroundColor: 'black',
+                borderRadius: 100,
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>
