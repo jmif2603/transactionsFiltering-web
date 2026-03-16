@@ -48,10 +48,11 @@ const BottomSheetDateRange = ({
   customRange,
   onOptionChange,
   onCustomRangeChange,
-  onClearSelection: _onClearSelection,
+  onClearSelection,
   onOverlayPress,
   onSave,
 }: BottomSheetDateRangeProps) => {
+  const hasSelection = selectedOption !== null;
   const [showCustomRange, setShowCustomRange] = useState(false);
 
   const handleCustomRangeSelect = (startDate: Date | null, endDate: Date | null) => {
@@ -150,6 +151,19 @@ const BottomSheetDateRange = ({
               />
             </div>
 
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '0 16px' }}>
+              <span style={{ fontFamily: 'Roboto, sans-serif', fontSize: 15, color: '#b8c0ca', letterSpacing: -0.15 }}>Transaction Date</span>
+              <button
+                type="button"
+                onClick={onClearSelection}
+                disabled={!hasSelection}
+                style={{ background: 'none', border: 'none', padding: '4px 0', cursor: hasSelection ? 'pointer' : 'default', fontFamily: 'Roboto, sans-serif', fontSize: 13, color: hasSelection ? '#1d7883' : '#b8c0ca' }}
+              >
+                Clear
+              </button>
+            </div>
+
             {/* Content */}
             <div
               style={{
@@ -158,7 +172,7 @@ const BottomSheetDateRange = ({
                 gap: 8,
                 alignItems: 'flex-start',
                 width: '100%',
-                padding: 16,
+                padding: '0 16px 16px',
               }}
             >
               {/* Radio Button Options */}

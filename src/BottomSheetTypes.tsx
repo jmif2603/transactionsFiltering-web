@@ -23,10 +23,11 @@ const BottomSheetTypes = ({
   moneyOutSelected = false,
   onMoneyInChange,
   onMoneyOutChange,
-  onClearSelection: _onClearSelection,
+  onClearSelection,
   onOverlayPress,
   onSave,
 }: BottomSheetTypesProps) => {
+  const hasSelection = moneyInSelected || moneyOutSelected;
   return (
     <div
       style={{
@@ -94,6 +95,19 @@ const BottomSheetTypes = ({
               borderRadius: 5,
             }}
           />
+        </div>
+
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '0 16px' }}>
+          <span style={{ fontFamily: 'Roboto, sans-serif', fontSize: 15, color: '#b8c0ca', letterSpacing: -0.15 }}>Type</span>
+          <button
+            type="button"
+            onClick={onClearSelection}
+            disabled={!hasSelection}
+            style={{ background: 'none', border: 'none', padding: '4px 0', cursor: hasSelection ? 'pointer' : 'default', fontFamily: 'Roboto, sans-serif', fontSize: 13, color: hasSelection ? '#1d7883' : '#b8c0ca' }}
+          >
+            Clear
+          </button>
         </div>
 
         {/* Content */}
