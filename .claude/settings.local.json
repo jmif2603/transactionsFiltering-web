@@ -22,7 +22,8 @@
       "Bash(do)",
       "Bash(echo \"=== $hash ===\")",
       "Bash(curl -s \"http://localhost:3845/assets/$hash.svg\")",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

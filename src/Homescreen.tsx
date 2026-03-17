@@ -12,9 +12,9 @@ import SelectedFilterA from './components/SelectedFilterA';
 import SelectedFilterB from './components/SelectedFilterB';
 import BenefitIconDuo from './components/BenefitIconDuo';
 import IconReceipt from './components/Icons/IconReceipt';
-import DefaultFilterView, { DEFAULT_BENEFIT_SELECTIONS } from './FilterViewA';
-import type { FilterViewProps, FilterState } from './FilterViewA';
-import { clearedTransactions, pendingTransactions } from './data/transactions';
+import DefaultFilterView from './FilterViewA';
+import type { FilterViewProps } from './FilterViewA';
+import { useTransactionFilters } from './hooks/useTransactionFilters';
 
 // ============ Sub-components ============
 
@@ -135,16 +135,20 @@ const Homescreen = ({ FilterView = DefaultFilterView, filterChipVariant = 'A' }:
     'wallet' | 'cards' | 'invest' | 'account' | 'claims' | 'resources'
   >('wallet');
   const [showFilterView, setShowFilterView] = useState(false);
-  const [appliedFilters, setAppliedFilters] = useState<FilterState | null>(null);
 
-  const hasActiveFilters = appliedFilters !== null && (
-    Object.values(appliedFilters.benefitSelections).some(Boolean) ||
-    appliedFilters.moneyInSelected ||
-    appliedFilters.moneyOutSelected ||
-    appliedFilters.clearedSelected ||
-    appliedFilters.pendingSelected ||
-    appliedFilters.dateRangeOption !== null
-  );
+  const {
+    appliedFilters,
+    setAppliedFilters,
+    hasActiveFilters,
+    filteredCleared,
+    filteredPending,
+    showClearedSection,
+    showPendingSection,
+    clearBenefitFilter,
+    clearTypeFilter,
+    clearStatusFilter,
+    clearDateFilter,
+  } = useTransactionFilters();
 
   // Drag to scroll functionality
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -174,55 +178,6 @@ const Homescreen = ({ FilterView = DefaultFilterView, filterChipVariant = 'A' }:
   const handleMouseLeave = () => {
     setIsDragging(false);
   };
-
-  // Filtering
-  const benefitKeyToType: Record<string, string> = {
-    healthSavings: 'HSA_FSA', hra: 'HRA', dcfsa: 'DCFSA', lpfsa: 'LPFSA',
-    remoteWork: 'RemoteWork', transit: 'Transit', lsa: 'LSA', parking: 'Parking', rewards: 'Rewards',
-  };
-  const selectedBenefitTypes = appliedFilters
-    ? Object.entries(appliedFilters.benefitSelections).filter(([, v]) => v).map(([k]) => benefitKeyToType[k])
-    : [];
-  const anyBenefitFilter = selectedBenefitTypes.length > 0;
-  const anyTypeFilter = appliedFilters ? (appliedFilters.moneyInSelected || appliedFilters.moneyOutSelected) : false;
-  const anyStatusFilter = appliedFilters ? (appliedFilters.clearedSelected || appliedFilters.pendingSelected) : false;
-
-  const filterTx = (tx: { benefit?: string; type?: string; direction?: string; date?: string }) => {
-    if (anyBenefitFilter && !selectedBenefitTypes.includes(tx.benefit ?? '')) return false;
-    if (anyTypeFilter) {
-      if (appliedFilters?.moneyInSelected && tx.direction === 'MoneyIn') return true;
-      if (appliedFilters?.moneyOutSelected && tx.direction === 'MoneyOut') return true;
-      return false;
-    }
-    if (appliedFilters?.dateRangeOption && tx.date) {
-      const txDate = new Date(tx.date);
-      const now = new Date();
-      if (appliedFilters.dateRangeOption === 'custom') {
-        const { startDate, endDate } = appliedFilters.customDateRange ?? {};
-        if (startDate && endDate) {
-          const end = new Date(endDate);
-          end.setHours(23, 59, 59, 999);
-          if (txDate < startDate || txDate > end) return false;
-        }
-      } else {
-        const msAgo: Record<string, number> = {
-          last24hours: 24 * 60 * 60 * 1000,
-          last3days: 3 * 24 * 60 * 60 * 1000,
-          last7days: 7 * 24 * 60 * 60 * 1000,
-          last14days: 14 * 24 * 60 * 60 * 1000,
-          last30days: 30 * 24 * 60 * 60 * 1000,
-        };
-        const cutoff = new Date(now.getTime() - msAgo[appliedFilters.dateRangeOption]);
-        if (txDate < cutoff) return false;
-      }
-    }
-    return true;
-  };
-
-  const showClearedSection = !anyStatusFilter || (appliedFilters?.clearedSelected ?? false);
-  const showPendingSection = !anyStatusFilter || (appliedFilters?.pendingSelected ?? false);
-  const filteredCleared = clearedTransactions.filter(filterTx);
-  const filteredPending = pendingTransactions.filter(filterTx);
 
   // Show FilterView when state is true
   if (showFilterView) {
@@ -431,13 +386,13 @@ const Homescreen = ({ FilterView = DefaultFilterView, filterChipVariant = 'A' }:
                     <SelectedFilterB
                       groupLabel="Benefit"
                       count={selectedBenefits.length}
-                      onClear={() => setAppliedFilters((prev) => prev && { ...prev, benefitSelections: DEFAULT_BENEFIT_SELECTIONS })}
+                      onClear={clearBenefitFilter}
                     />
                   ) : (
                     <SelectedFilterA
                       groupLabel="Benefit"
                       selectedValues={selectedBenefits}
-                      onClear={() => setAppliedFilters((prev) => prev && { ...prev, benefitSelections: DEFAULT_BENEFIT_SELECTIONS })}
+                      onClear={clearBenefitFilter}
                     />
                   )
                 )}
@@ -446,13 +401,13 @@ const Homescreen = ({ FilterView = DefaultFilterView, filterChipVariant = 'A' }:
                     <SelectedFilterB
                       groupLabel="Type"
                       count={selectedTypes.length}
-                      onClear={() => setAppliedFilters((prev) => prev && { ...prev, moneyInSelected: false, moneyOutSelected: false })}
+                      onClear={clearTypeFilter}
                     />
                   ) : (
                     <SelectedFilterA
                       groupLabel="Type"
                       selectedValues={selectedTypes}
-                      onClear={() => setAppliedFilters((prev) => prev && { ...prev, moneyInSelected: false, moneyOutSelected: false })}
+                      onClear={clearTypeFilter}
                     />
                   )
                 )}
@@ -461,13 +416,13 @@ const Homescreen = ({ FilterView = DefaultFilterView, filterChipVariant = 'A' }:
                     <SelectedFilterB
                       groupLabel="Status"
                       count={selectedStatuses.length}
-                      onClear={() => setAppliedFilters((prev) => prev && { ...prev, clearedSelected: false, pendingSelected: false })}
+                      onClear={clearStatusFilter}
                     />
                   ) : (
                     <SelectedFilterA
                       groupLabel="Status"
                       selectedValues={selectedStatuses}
-                      onClear={() => setAppliedFilters((prev) => prev && { ...prev, clearedSelected: false, pendingSelected: false })}
+                      onClear={clearStatusFilter}
                     />
                   )
                 )}
@@ -475,7 +430,7 @@ const Homescreen = ({ FilterView = DefaultFilterView, filterChipVariant = 'A' }:
                   <SelectedFilterA
                     groupLabel="Date"
                     selectedValues={[dateLabel]}
-                    onClear={() => setAppliedFilters((prev) => prev && { ...prev, dateRangeOption: null, customDateRange: undefined })}
+                    onClear={clearDateFilter}
                     backgroundColor={filterChipVariant === 'B' ? 'white' : undefined}
                   />
                 )}
