@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import DragHandle from './components/DragHandle';
-import IconEditPencil from './components/Icons/IconEditPencil';
+import { IconEditPencil } from './components/icons';
 
 interface DateRangeCustomRangeProps {
   /** Whether the bottom sheet is visible */
