@@ -154,7 +154,7 @@ export const pendingTransactions: Transaction[] = [
     date: 'Jan 03, 2024',
     type: 'Pending',
     direction: 'MoneyOut',
-    benefit: 'Funding',
+    benefit: 'LSA',
   },
   {
     merchantName: 'Deposit',
@@ -162,7 +162,7 @@ export const pendingTransactions: Transaction[] = [
     transactionAmount: '250.00',
     date: 'Dec 28, 2023',
     type: 'Pending',
-    direction: 'MoneyIn',
+    direction: 'MoneyOut',
     benefit: 'Parking',
   },
   {

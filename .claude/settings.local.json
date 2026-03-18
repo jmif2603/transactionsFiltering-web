@@ -25,7 +25,8 @@
       "Bash(done)",
       "Bash(npx tsc:*)",
       "Bash(jq -r .[0].text /Users/jessiekarch/.claude/projects/-Users-jessiekarch-vscodeProjs-transactions-filtering/70a035a2-2778-4e5c-8f24-b221720d5a49/tool-results/toolu_01PJeGwg5PjTdahTK38Wtz7y.txt)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "mcp__figma__get_metadata"
     ]
   }
 }

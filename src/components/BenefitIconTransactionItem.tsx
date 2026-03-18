@@ -29,7 +29,7 @@ const BenefitTransactionIcon = ({
   const backgroundColors: Record<TransactionType, string> = {
     MoneyIn: '#e9f6ed',   // Success/light green
     MoneyOut: '#fbebec',  // Critical/light red
-    Pending: '#f7f3f2',   // Background/dark gray
+    Pending: '#fbebec',   // Critical/light red (same as MoneyOut)
   };
 
   // Icon colors based on transaction type

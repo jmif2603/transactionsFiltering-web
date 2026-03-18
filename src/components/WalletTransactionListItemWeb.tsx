@@ -129,20 +129,37 @@ const WalletTransactionListItemWeb = ({
           flexShrink: 0,
         }}
       >
-        <p
-          style={{
-            fontFamily: 'Roboto, sans-serif',
-            fontSize: 15,
-            fontWeight: 500,
-            lineHeight: '22.5px',
-            letterSpacing: -0.15,
-            color: colors.textDark,
-            margin: 0,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {isMoneyOut ? '- $' : '$'}{transactionAmount}
-        </p>
+        {type === 'Pending' ? (
+          <p
+            style={{
+              fontFamily: 'Roboto, sans-serif',
+              fontSize: 15,
+              fontWeight: 500,
+              lineHeight: '22.5px',
+              letterSpacing: -0.15,
+              margin: 0,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {isMoneyOut && <span style={{ color: colors.textDark }}>- </span>}
+            <span style={{ color: colors.textMuted }}>${transactionAmount}</span>
+          </p>
+        ) : (
+          <p
+            style={{
+              fontFamily: 'Roboto, sans-serif',
+              fontSize: 15,
+              fontWeight: 500,
+              lineHeight: '22.5px',
+              letterSpacing: -0.15,
+              color: isMoneyOut ? colors.textDark : '#27a74a',
+              margin: 0,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {isMoneyOut ? '- $' : '$'}{transactionAmount}
+          </p>
+        )}
         <IconChevronRight size={16} color={colors.textMuted} />
       </div>
     </div>
