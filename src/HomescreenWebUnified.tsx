@@ -382,7 +382,7 @@ const FilterPanel = ({
               onClick={() => { setSelectedDateRange(null); setCustomDateRange({ startDate: null, endDate: null }); }}
               style={filterActionBtnStyle}
             >
-              Clear All
+              Clear
             </button>
           )}
         </div>
