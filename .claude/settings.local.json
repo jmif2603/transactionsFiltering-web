@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(lsof -ti :3333)",
+      "Bash(xargs kill -9)",
+      "Bash(curl -s http://127.0.0.1:3333/mcp)",
+      "Bash(curl -s -N --max-time 3 http://127.0.0.1:3333/sse)",
+      "Bash(node --version)",
+      "Bash(launchctl unload ~/Library/LaunchAgents/com.figma.mcp.plist)",
+      "Bash(launchctl load ~/Library/LaunchAgents/com.figma.mcp.plist)",
+      "Bash(npx figma-developer-mcp --version)",
+      "Bash(npm show figma-developer-mcp version)",
+      "Bash(curl -s http://127.0.0.1:3845/mcp)",
+      "Bash(curl -s http://127.0.0.1:3845/sse)",
+      "Bash(curl -s --max-time 3 http://127.0.0.1:3845/mcp)",
+      "mcp__figma__get_design_context",
+      "mcp__figma__get_screenshot",
+      "WebFetch(domain:localhost)",
+      "Bash(curl -s http://localhost:3845/assets/ea9a70d45ae9572e6c227359de93bedf69961b10.svg)",
+      "Bash(for hash:*)",
+      "Bash(do)",
+      "Bash(echo \"=== $hash ===\")",
+      "Bash(curl -s \"http://localhost:3845/assets/$hash.svg\")",
+      "Bash(done)",
+      "Bash(npx tsc:*)",
+      "Bash(jq -r .[0].text /Users/jessiekarch/.claude/projects/-Users-jessiekarch-vscodeProjs-transactions-filtering/70a035a2-2778-4e5c-8f24-b221720d5a49/tool-results/toolu_01PJeGwg5PjTdahTK38Wtz7y.txt)",
+      "Read(//tmp/**)",
+      "mcp__figma__get_metadata",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npm run:*)"
+    ]
+  }
+}
